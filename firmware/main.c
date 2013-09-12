@@ -13,7 +13,7 @@
 #include <util/delay.h>
 //////// UART /////////////////////
 
-BOOTLOADER_SECTION 
+BOOTLOADER_SECTION
 
 
 ///////////////////////////////////

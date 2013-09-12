@@ -1,4 +1,10 @@
 
+CFLAGS=
+CFLAGS+=-Ilibcintelhex/include
+
+LDLIBS=
+LDLIBS+=-Llibcintelhex/bin/ -lcintelhex
+
 all: make run
 
 main.hex:
@@ -6,7 +12,7 @@ main.hex:
 	cp ../hello/$@ .
 
 make: libcintelhex/bin/libcintelhex.so
-	gcc main.c
+	gcc -o prog main.c $(CFLAGS) $(LDLIBS)
 
 libcintelhex/bin/libcintelhex.so:
 	cd libcintelhex && autoconf 
@@ -14,4 +20,4 @@ libcintelhex/bin/libcintelhex.so:
 	cd libcintelhex && make
 
 run: main.hex
-	./a.out main.hex
+	LD_LIBRARY_PATH=`pwd`/libcintelhex/bin/ ./prog main.hex
