@@ -24,7 +24,7 @@ AVRDUDE = avrdude -c ${TYPEPROG} -p m328p
 
 #BOOTSTART=0x3800
 BOOTSTART=0x7000
-LDLIBS+=-Wl,--section-start=.text=$(BOOTSTART) -section-start=.bootloader=$(BOOTSTART)
+LDLIBS+=-Wl,--section-start=.text=$(BOOTSTART) 
 
 
 #OBJECTS = usbdrv/usbdrv.o usbdrv/usbdrvasm.o usbdrv/oddebug.o main.o usbtty.o
@@ -76,6 +76,7 @@ flash:	all
 
 read:	all
 	$(AVRDUDE) -U flash:r:read.hex:i
+	objcopy -I ihex -O ihex read.hex read16.hex
 
 # Fuse low byte:
 # 0xef = 1 1 1 0   1 1 1 1

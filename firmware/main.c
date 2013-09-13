@@ -15,7 +15,6 @@
 
 BOOTLOADER_SECTION
 
-
 ///////////////////////////////////
 
 static void boot_program_page (uint32_t page, uint8_t *buf)
@@ -52,25 +51,94 @@ static void boot_program_page (uint32_t page, uint8_t *buf)
 
 }
 
-static void putint(int number) {
-  char buff[5];
-  int i,j;
+static void putint(unsigned int number) {
+  unsigned char buff[5];
+  int i;
+
+  if (number==0) {
+    putchar('0');
+    return;
+  }
 
   i=0;
-  while (number!=0) {
+  while (number>0) {
     buff[i]=number%10;
+    if (buff[i]>10) buff[i]=0;
     number/=10;
     i++;
   }
-  while (i>0) putchar('0'+buff[i--]);
+  i--;
+  while (i>=0) putchar('0'+(unsigned int)buff[i--]);
 }
 
-static writeall() {
-  int pages;
-  pages=getch();
+static void puthex(unsigned char number) {
+  unsigned char buff[5];
+  int i;
   
-  puts("Pages:");
+  if (number==0) {
+    putchar('0');
+    putchar('0');
+    return;
+  }
+
+  i=0;
+  while (number>0) {
+    buff[i]=number%16;
+    if (buff[i]>16) buff[i]=0;
+    number/=16;
+    i++;
+  }
+  i--;
+  while (i>=0) {
+    unsigned char ch=buff[i--];
+    if (ch>=10) putchar('A'+ch-10);
+    else       putchar('0'+ch);
+  }
+}
+static int writeall() {
+  char buff[SPM_PAGESIZE];
+
+  puts("In write mode");
+  uint32_t bytes=0;
+  uint32_t bi=0;
+  int pages;
+  int x;
+  int p;
+
+  bytes|=getbyte()<<0;
+  bytes|=getbyte()<<8;
+  bytes|=(uint32_t)getbyte()<<16;
+  bytes|=(uint32_t)getbyte()<<24;
+
+  pages=bytes/SPM_PAGESIZE;
+
+  fputs("Wait:",stdout);
+  putint(bytes);
+  puts("");
+
+  fputs("Pages:",stdout);
   putint(pages);
+  puts("");
+
+  bi=bytes%SPM_PAGESIZE-1;
+  for (p=0;p<=pages;p++) {
+    int i;
+
+    fputs("Write page:",stdout);
+    putint(p);
+    puts("");
+
+    for (i=0;i<SPM_PAGESIZE;i++) {
+      buff[i]=getbyte();
+//#puthex(buff[i]);
+      if ( 
+          (p==pages) &&
+          (i>=bi)
+         ) break;
+    }
+    boot_program_page (p*SPM_PAGESIZE, buff);
+  }
+
 
 
   return 0;
@@ -81,12 +149,11 @@ int main(void) {
   uart_init();
   uart_stdio();
 
-  char buff[SPM_PAGESIZE];
+  void (*funcptr)( void ) = 0x0000;
 
   puts("BOOT LOADER mode");
   //printf("We a in BOOT LOADER mode\n");
   //printf("%x\n", &main);
-
 
   int i=0;
   while (1) {
@@ -94,17 +161,19 @@ int main(void) {
     i++;
     //ch=2;
     ch=getch();
-
-    fputs("Pressed key__ ",stdout);
+    //fputs("Pressed key__ ",stdout);
     putchar(ch);
     if (ch == 'W') {
       puts("xxIn WRITE MODE\n");
-      //writeall();
+      writeall();
+      puts("Try to run application...\n");
+      funcptr();
     }
-    puts("");//%i\n",ch);
+    if (ch == 'R') {
+      funcptr();
+    }
+    puts("");
 
-//    memset(buff,ch,SPM_PAGESIZE);
-//    boot_program_page(i*SPM_PAGESIZE,buff);
 
     //sleep(1);
     _delay_ms(100);

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 error=0
-#codelimit=2048  # default value
+codelimit=2048  # default value
 datalimit=480 #96    # default value; leave 32 bytes for stack
 
 if [ $# -gt 1 ]; then

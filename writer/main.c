@@ -13,41 +13,81 @@
 
 #define DEBUG(...) ({ printf("PROG: "); printf(__VA_ARGS__); })
 
+/*
 int inbuffer(int fd) {
+  int xx;
   int rsize;
   char tmpbuff[100];
 
-  rsize=read(fd,tmpbuff,sizeof(tmpbuff)-1);
-  if (rsize) {
-    tmpbuff[rsize]='\0';
-    printf("RETURNED: '%s'",tmpbuff);
+  xx=10;
+  while (xx-->0){
+    rsize=read(fd,tmpbuff,sizeof(tmpbuff)-1);
+    if (rsize) {
+      tmpbuff[rsize]='\0';
+      printf("RETURNED: '%s'",tmpbuff);
+    }
+    usleep(10);
   }
 
   return 0;
-}
+}*/
 
-static s_programming(int fd, ihex_error_t ihfd) {
+static int s_programming(int fd, ihex_recordset_t* ihfd) {
+  int i;
   char ch;
+  char *data=NULL;
 
   ch='W';
   write(fd,&ch,1);
   sleep(1);
 
-  inbuffer(fd);
-  
   uint32_t fsize=ihex_rs_get_size(ihfd);
   DEBUG("Send file size: %i\n", fsize);
 
-  write(fd,&fsize,4);
-  sleep(1);
-  inbuffer(fd);
+  write(fd,(char*)(&fsize)+0,1);
+  usleep(10000);
+  write(fd,(char*)(&fsize)+1,1);
+  usleep(10000);
+  write(fd,(char*)(&fsize)+2,1);
+  usleep(10000);
+  write(fd,(char*)(&fsize)+3,1);
+  usleep(10000);
+  
+  data=malloc(fsize);
 
+  int res = ihex_mem_copy(ihfd, data, fsize, IHEX_WIDTH_8BIT,IHEX_ORDER_LITTLEENDIAN );
+  if (res != 0) {
+    //FIXME
+    printf("ERR copy memory\n");
+    return 1;
+  }
+    
+  usleep(100000);
+
+  for (i=0;i<fsize;i++) {
+    if ((i%128)==0) {
+      printf("Page %i\n",i/128);
+      usleep(100000);
+    }
+
+    //printf("CH: %x\n",(unsigned char)&data[i]);
+    //return 1;
+    int xx=write(fd,&data[i],1);
+    //printf("HEX: %x\n",(unsigned char)data[i]);
+    if (xx<0) {
+      perror("");
+    }
+    usleep(1000);
+  }
+  return 0;
 }
 
 int setterminal(int fd) {
   //Term in NON block
   struct termios newfd;
   tcgetattr(fd,&newfd);
+
+  cfmakeraw(&newfd);
   //c_cc[VMIN]) and TIME (c_cc[VTIME]
   newfd.c_cc[VMIN]=0;
   newfd.c_cc[VTIME]=1;

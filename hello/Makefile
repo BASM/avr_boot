@@ -28,9 +28,9 @@ OBJECTS = main.o
 DEPLIBS+=libavr
 AVRLIBS=uart #twi
 
-AVR_LDLIBS=-L../lib/libavr $(foreach lib,${AVRLIBS},-l ${lib}) 
-AVR_CFLAGS=-I../lib/libavr/include
-AVR_DEPS=$(foreach lib,${LIBS},../lib/libavr/lib${lib}.a)
+AVR_LDLIBS=-L../firmware/lib/libavr $(foreach lib,${AVRLIBS},-l ${lib}) 
+AVR_CFLAGS=-I../firmware/lib/libavr/include
+AVR_DEPS=$(foreach lib,${LIBS},../firmware/lib/libavr/lib${lib}.a)
 
 
 LDLIBS+=${AVR_LDLIBS}
@@ -39,10 +39,10 @@ DEPS  +=${AVR_DEPS}
 
 #LIBS=ir
 DEPLIBS+=$(LIBS:%=lib%)
-LDLIBS+=$(foreach lib,${LIBS},-L../lib/lib${lib} -l${lib})
-CFLAGS+=$(foreach inc,${LIBS},-I../lib/lib${inc}/include)
+LDLIBS+=$(foreach lib,${LIBS},-L../firmware/lib/lib${lib} -l${lib})
+CFLAGS+=$(foreach inc,${LIBS},-I../firmware/lib/lib${inc}/include)
 
-DEPS=$(foreach lib,${LIBS},../lib/lib${lib}/lib${lib}.a)
+DEPS=$(foreach lib,${LIBS},../firmware/lib/lib${lib}/lib${lib}.a)
 
 
 COMPILE = avr-gcc -Os -Wall -I. -mmcu=$(DEVICE) -DF_CPU=${FREQ} $(CFLAGS)
@@ -50,7 +50,7 @@ COMPILE = avr-gcc -Os -Wall -I. -mmcu=$(DEVICE) -DF_CPU=${FREQ} $(CFLAGS)
 all: $(DEPLIBS) main.hex
 
 ${DEPLIBS}:
-	make -C ../lib/$@/
+	make -C ../firmware/lib/$@/
 #libir:
 #	make -C libs/libir/
 
