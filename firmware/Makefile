@@ -31,7 +31,7 @@ LDLIBS+=-Wl,--section-start=.text=$(BOOTSTART)
 OBJECTS = main.o
 
 DEPLIBS+=libavr
-AVRLIBS=uart #twi
+AVRLIBS=uart stdioconf
 
 AVR_LDLIBS=-Llib/libavr $(foreach lib,${AVRLIBS},-l ${lib}) 
 AVR_CFLAGS=-Ilib/libavr/include
