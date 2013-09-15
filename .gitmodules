@@ -1,6 +1,6 @@
 [submodule "writer/libcintelhex"]
 	path = writer/libcintelhex
-	url = https://github.com/martin-helmich/libcintelhex.git
+	url = git@github.com:BASM/libcintelhex.git
 [submodule "firmware/lib/libavr"]
 	path = firmware/lib/libavr
 	url = git@github.com:BASM/libavr.git

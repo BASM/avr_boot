@@ -3,7 +3,7 @@ CFLAGS=
 CFLAGS+=-Ilibcintelhex/include
 
 LDLIBS=
-LDLIBS+=-Llibcintelhex/bin/ -lcintelhex
+LDLIBS+=-Llibcintelhex/ -lcintelhex
 
 all: make run
 
@@ -20,4 +20,4 @@ libcintelhex/bin/libcintelhex.so:
 	cd libcintelhex && make
 
 run: main.hex
-	LD_LIBRARY_PATH=`pwd`/libcintelhex/bin/ ./prog main.hex
+	./prog main.hex
