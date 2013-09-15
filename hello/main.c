@@ -38,7 +38,7 @@ static writeall() {
 int main(void) {
 
   uart_init();
-  uart_stdio();
+  stdioconf_stdio();
 
   int i=0;
   while (1) {

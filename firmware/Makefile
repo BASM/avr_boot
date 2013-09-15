@@ -31,7 +31,8 @@ LDLIBS+=-Wl,--section-start=.text=$(BOOTSTART)
 OBJECTS = main.o
 
 DEPLIBS+=libavr
-AVRLIBS=uart stdioconf
+AVRLIBS+=uart
+AVRLIBS+=stdioconf
 
 AVR_LDLIBS=-Llib/libavr $(foreach lib,${AVRLIBS},-l ${lib}) 
 AVR_CFLAGS=-Ilib/libavr/include
@@ -49,7 +50,8 @@ CFLAGS+=$(foreach inc,${LIBS},-Ilib/lib${inc}/include)
 DEPS=$(foreach lib,${LIBS},lib/lib${lib}/lib${lib}.a)
 
 
-COMPILE = avr-gcc -Os -Wall -I. -mmcu=$(DEVICE) -DF_CPU=${FREQ} $(CFLAGS)
+#COMPILE = avr-gcc -flto -Os -Wall -I. -mmcu=$(DEVICE) -DF_CPU=${FREQ} $(CFLAGS)
+COMPILE = avr-gcc  -Os -Wall -I. -mmcu=$(DEVICE) -DF_CPU=${FREQ} $(CFLAGS)
 # symbolic targets:
 all: $(DEPLIBS) main.hex
 

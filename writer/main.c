@@ -116,6 +116,7 @@ static void s_ihex_printerr(ihex_error_t err) {
 
 int main(int argc, char *argv[]) {
   int fd;
+  int i;
   ihex_recordset_t* ihfd;
   char *filename=NULL;
 
@@ -145,6 +146,13 @@ int main(int argc, char *argv[]) {
 
 
   setterminal(fd);
+
+  i=300;
+  while (i--) {
+    char ch='A';
+    write(fd, &ch, 1);
+    usleep(10000);
+  }
 
   s_programming(fd,ihfd);
 

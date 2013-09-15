@@ -51,55 +51,9 @@ static void boot_program_page (uint32_t page, uint8_t *buf)
 
 }
 
-/*
-static void putint(unsigned int number) {
-  unsigned char buff[5];
-  int i;
-
-  if (number==0) {
-    putchar('0');
-    return;
-  }
-
-  i=0;
-  while (number>0) {
-    buff[i]=number%10;
-    if (buff[i]>10) buff[i]=0;
-    number/=10;
-    i++;
-  }
-  i--;
-  while (i>=0) putchar('0'+(unsigned int)buff[i--]);
-}*/
-
-static void puthex(unsigned char number) {
-  unsigned char buff[5];
-  int i;
-  
-  if (number==0) {
-    putchar('0');
-    putchar('0');
-    return;
-  }
-
-  i=0;
-  while (number>0) {
-    buff[i]=number%16;
-    if (buff[i]>16) buff[i]=0;
-    number/=16;
-    i++;
-  }
-  i--;
-  while (i>=0) {
-    unsigned char ch=buff[i--];
-    if (ch>=10) putchar('A'+ch-10);
-    else       putchar('0'+ch);
-  }
-}
 static int writeall() {
   char buff[SPM_PAGESIZE];
 
-  //puts("In write mode");
   uint32_t bytes=0;
   uint32_t bi=0;
   int pages;
@@ -119,56 +73,52 @@ static int writeall() {
 
     for (i=0;i<SPM_PAGESIZE;i++) {
       buff[i]=getbyte();
-//#puthex(buff[i]);
-      if ( 
-          (p==pages) &&
+      if ((p==pages) &&
           (i>=bi)
          ) break;
     }
     boot_program_page (p*SPM_PAGESIZE, buff);
   }
 
-
-
   return 0;
 }
 
 int main(void) {
+  int byte;
+  int progmode=0;
 
   uart_init();
   //stdioconf_stdio();
 
-  void (*funcptr)( void ) = 0x0000;
+  _delay_ms(100);
 
-  //puts("BOOT LOADER mode");
-  //printf("We a in BOOT LOADER mode\n");
-  //printf("%x\n", &main);
+  byte = getbyte_nonblock();
+  if (byte=='A') {
+    bchar_put('X');
+    progmode=1;
+  }
+  void (*funcptr)( void ) = 0x0000;
+  
+  if (progmode!=1) {
+    bchar_put('A');
+    funcptr();
+  }
 
   int i=0;
   while (1) {
     char ch;
     i++;
-    //ch=2;
     ch=getbyte();
-    //fputs("Pressed key__ ",stdout);
-    putchar(ch);
     if (ch == 'W') {
-      //puts("xxIn WRITE MODE\n");
       writeall();
-      //puts("Try to run application...\n");
       funcptr();
     }
     if (ch == 'R') {
       funcptr();
     }
-    //puts("");
 
-
-    //sleep(1);
     _delay_ms(100);
   }
-
-
 
   return 0;
 }

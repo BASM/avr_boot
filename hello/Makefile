@@ -26,7 +26,7 @@ AVRDUDE = avrdude -c ${TYPEPROG} -p m328p
 OBJECTS = main.o
 
 DEPLIBS+=libavr
-AVRLIBS=uart #twi
+AVRLIBS=uart stdioconf
 
 AVR_LDLIBS=-L../firmware/lib/libavr $(foreach lib,${AVRLIBS},-l ${lib}) 
 AVR_CFLAGS=-I../firmware/lib/libavr/include
@@ -45,7 +45,7 @@ CFLAGS+=$(foreach inc,${LIBS},-I../firmware/lib/lib${inc}/include)
 DEPS=$(foreach lib,${LIBS},../firmware/lib/lib${lib}/lib${lib}.a)
 
 
-COMPILE = avr-gcc -Os -Wall -I. -mmcu=$(DEVICE) -DF_CPU=${FREQ} $(CFLAGS)
+COMPILE = avr-gcc  -flto -Os -Wall -I. -mmcu=$(DEVICE) -DF_CPU=${FREQ} $(CFLAGS)
 # symbolic targets:
 all: $(DEPLIBS) main.hex
 
