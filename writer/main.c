@@ -4,6 +4,9 @@
 #include <fcntl.h>
 #include <errno.h>
 
+#include <fcntl.h>
+#include <sys/ioctl.h>
+
 #include <termios.h>
 #include <unistd.h>
 
@@ -147,7 +150,17 @@ int main(int argc, char *argv[]) {
 
   setterminal(fd);
 
-  i=300;
+  int res=0;
+  int sercmd;
+  int stat=0;
+
+  sercmd = TIOCM_DTR;
+
+  ioctl(fd, TIOCMBIS, &sercmd);
+  usleep(100000);
+  ioctl(fd, TIOCMBIC, &sercmd); // Reset the RTS pin.
+
+  i=3;
   while (i--) {
     char ch='A';
     write(fd, &ch, 1);
