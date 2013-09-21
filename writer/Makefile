@@ -21,3 +21,7 @@ libcintelhex/bin/libcintelhex.so:
 
 run: main.hex
 	./prog main.hex
+
+u:
+	./prog -u
+
