@@ -208,7 +208,7 @@ static usage(char *name) {
   puts("Options:");
   puts(" -h --   -- help message");
   puts(" -u --   -- only unlock MK (release Reset pin)");
-  puts(" -r  -- set reset pin RST or DTR (default DTR)");
+  puts(" -r  -- set reset pin RTS or DTR (default DTR)");
   puts(" --port -p");
   puts("      set tty device name (default /dev/ttyUSB0)");
   puts(" --invert -i");
