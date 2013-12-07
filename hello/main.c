@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <uart.h>
 #include <inttypes.h>
+#include <avr/wdt.h>
 #include <avr/boot.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
@@ -39,6 +40,7 @@ int main(void) {
 
   uart_init();
   stdioconf_stdio();
+  wdt_enable(WDTO_2S);
 
   int i=0;
   while (1) {

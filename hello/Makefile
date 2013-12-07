@@ -68,7 +68,7 @@ ${DEPLIBS}:
 	$(COMPILE) -S $< -o $@
 
 flash:	all
-	$(AVRDUDE) -V -U flash:w:main.hex:i
+	 ../writer/prog -r RTS main.hex
 
 read:	all
 	$(AVRDUDE) -U flash:r:read.hex:i
