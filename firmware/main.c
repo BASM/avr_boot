@@ -4,15 +4,28 @@
  * Self program
  */
 
+#include <stdint.h>
 #include <stdio.h>
 #include <uart.h>
 #include <inttypes.h>
 #include <avr/boot.h>
 #include <avr/interrupt.h>
 #include <avr/pgmspace.h>
+#include <avr/wdt.h>
 #include <util/delay.h>
 //////// UART /////////////////////
 
+uint8_t mcusr_mirror __attribute__ ((section (".noinit")));
+void get_mcusr(void) \
+       __attribute__((naked)) \
+       __attribute__((section(".init3")));
+
+void get_mcusr(void)
+{
+  mcusr_mirror = MCUSR;
+  MCUSR = 0;
+  wdt_disable();
+}
 BOOTLOADER_SECTION
 
 ///////////////////////////////////
@@ -52,12 +65,11 @@ static void boot_program_page (uint32_t page, uint8_t *buf)
 }
 
 static int writeall() {
-  char buff[SPM_PAGESIZE];
+  uint8_t buff[SPM_PAGESIZE];
 
   uint32_t bytes=0;
   uint32_t bi=0;
   int pages;
-  int x;
   int p;
 
   bytes|=getbyte()<<0;
@@ -91,7 +103,7 @@ int main(void) {
   //stdioconf_stdio();
 
   _delay_ms(100);
-
+    
   byte = getbyte_nonblock();
   if (byte=='A') {
     bchar_put('X');
