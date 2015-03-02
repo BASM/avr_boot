@@ -5,7 +5,8 @@ CFLAGS+=-Ilibcintelhex/include
 LDLIBS=
 LDLIBS+=-Llibcintelhex/ -lcintelhex
 
-all: make run
+#all: make run
+all: make
 
 main.hex:
 	make -C ../hello

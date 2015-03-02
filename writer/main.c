@@ -38,6 +38,8 @@ int inbuffer(int fd) {
   return 0;
 }*/
 
+#define PERUD 20000
+
 static int s_programming(int fd, ihex_recordset_t* ihfd) {
   int i;
   char ch;
@@ -51,13 +53,13 @@ static int s_programming(int fd, ihex_recordset_t* ihfd) {
   DEBUG("Send file size: %i\n", fsize);
 
   write(fd,(char*)(&fsize)+0,1);
-  usleep(10000);
+  usleep(PERUD);
   write(fd,(char*)(&fsize)+1,1);
-  usleep(10000);
+  usleep(PERUD);
   write(fd,(char*)(&fsize)+2,1);
-  usleep(10000);
+  usleep(PERUD);
   write(fd,(char*)(&fsize)+3,1);
-  usleep(10000);
+  usleep(PERUD);
   
   data=malloc(fsize);
 
@@ -68,12 +70,12 @@ static int s_programming(int fd, ihex_recordset_t* ihfd) {
     return 1;
   }
     
-  usleep(100000);
+  usleep(PERUD*10);
 
   for (i=0;i<fsize;i++) {
     if ((i%128)==0) {
       printf("Page %i\n",i/128);
-      usleep(100000);
+      usleep(PERUD*10);
     }
 
     //printf("CH: %x\n",(unsigned char)&data[i]);
@@ -83,7 +85,7 @@ static int s_programming(int fd, ihex_recordset_t* ihfd) {
     if (xx<0) {
       perror("");
     }
-    usleep(1000);
+    usleep(PERUD/10);
   }
   return 0;
 }
@@ -285,8 +287,6 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-
-
   self->ihfd = ihex_rs_from_file(filename);
   if (self->ihfd==NULL) {
     ihex_error_t err = ihex_errno();
@@ -296,15 +296,15 @@ int main(int argc, char *argv[]) {
 
   setterminal(self->fdtty);
 
-
   device_hardreset(self);
 
-  i=3;
+  i=10;
   while (i--) {
     char ch='A';
     write(self->fdtty, &ch, 1);
     usleep(10000);
   }
+  sleep(1);
 
   s_programming(self->fdtty,self->ihfd);
  //*/
