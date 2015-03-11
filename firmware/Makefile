@@ -10,7 +10,8 @@ DEVICE = atmega328p
 #DEVICE = atmega168
 #TYPEPROG=siprog -P /dev/ttyS1
 #TYPEPROG=siprog -P /dev/ttyUSB0
-TYPEPROG=stk500v2 -P avrdoper
+#TYPEPROG=stk500v2 -P avrdoper
+TYPEPROG=dragon_pp
 #TYPEPROG=stk500v2 -P /dev/ttyACM2
 AVRDUDE = avrdude -c ${TYPEPROG} -p m328p
 #AVRDUDE = avrdude -c ${TYPEPROG} -p m168
@@ -134,6 +135,9 @@ fuse_mega168:	# only needed for atmega168
 ## USE external 12 mhz, in BOOT mode
 fuse_mega328P:	# only needed for atmega328P
 	$(AVRDUDE) -U hfuse:w:0xd8:m -U lfuse:w:0xe7:m
+
+fuse_mega328P_8i:
+	  $(AVRDUDE) -U hfuse:w:0xd8:m -U lfuse:w:0xa2:m
 
 clean:
 	rm -f main.hex main.lst main.obj main.cof main.list main.map main.eep.hex main.bin *.o usbdrv/*.o main.s usbdrv/oddebug.s usbdrv/usbdrv.s

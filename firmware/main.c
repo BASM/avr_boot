@@ -98,16 +98,21 @@ static int writeall() {
 int main(void) {
   int byte;
   int progmode=0;
+  int itr=10;
 
   uart_init();
   //stdioconf_stdio();
 
-  _delay_ms(100);
+  //_delay_ms(10);
     
-  byte = getbyte_nonblock();
-  if (byte=='A') {
-    bchar_put('X');
-    progmode=1;
+  while (itr-->0) {
+    _delay_ms(100);
+    byte = getbyte_nonblock();
+    if (byte=='A') {
+      bchar_put('X');
+      progmode=1;
+      break;
+    }
   }
   void (*funcptr)( void ) = 0x0000;
   
